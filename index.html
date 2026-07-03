@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neura — Personal AI for Better Work</title>
+  <style>
+    :root {
+      --ink: #111318;
+      --muted: #6b7280;
+      --line: rgba(17, 19, 24, .10);
+      --blue: #0071e3;
+      --blue-soft: #d7ebff;
+      --glass: rgba(255, 255, 255, .68);
+      --shadow: 0 28px 90px rgba(36, 60, 95, .16);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 74% 18%, rgba(216, 235, 255, .86), transparent 30%),
+        radial-gradient(circle at 18% 24%, rgba(255, 255, 255, .96), transparent 34%),
+        linear-gradient(180deg, #f7f9fc 0%, #ffffff 58%, #f5f7fa 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(17, 19, 24, .028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 19, 24, .022) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: linear-gradient(to bottom, transparent, #000 16%, transparent 78%);
+    }
+
+    .nav {
+      position: fixed;
+      z-index: 20;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1120px, calc(100% - 36px));
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px 0 20px;
+      border: 1px solid rgba(255, 255, 255, .72);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .58);
+      box-shadow: 0 8px 28px rgba(31, 45, 61, .08);
+      backdrop-filter: blur(24px) saturate(180%);
+    }
+
+    .brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-weight: 700;
+      letter-spacing: -.03em;
+    }
+
+    .mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      background: conic-gradient(from 160deg, #ffffff, #8fc9ff, #006ee6, #ffffff);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.8), 0 6px 18px rgba(0,113,227,.22);
+    }
+
+    .nav a {
+      color: rgba(17, 19, 24, .72);
+      text-decoration: none;
+      font-size: 14px;
+      margin: 0 13px;
+    }
+
+    .cta-small {
+      border: 0;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 10px 17px;
+      background: linear-gradient(180deg, #1486ff, #006edc);
+      box-shadow: 0 9px 22px rgba(0, 113, 227, .26);
+    }
+
+    .hero {
+      width: min(1180px, calc(100% - 44px));
+      min-height: 100vh;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: .94fr 1.06fr;
+      gap: 28px;
+      align-items: center;
+      padding: 118px 0 74px;
+    }
+
+    .copy { position: relative; z-index: 2; }
+
+    .eyebrow {
+      width: fit-content;
+      padding: 8px 13px;
+      color: #245078;
+      font-size: 14px;
+      font-weight: 650;
+      border: 1px solid rgba(0, 113, 227, .14);
+      border-radius: 999px;
+      background: rgba(230, 244, 255, .72);
+      animation: reveal .7s ease both;
+    }
+
+    h1 {
+      margin: 20px 0 18px;
+      font-size: clamp(56px, 8vw, 116px);
+      line-height: .92;
+      letter-spacing: -.075em;
+      font-weight: 760;
+      animation: reveal .7s .08s ease both;
+    }
+
+    .shine {
+      display: inline-block;
+      color: transparent;
+      background: linear-gradient(100deg, #111318 8%, #4c5969 34%, #a7cfff 50%, #111318 66%);
+      background-size: 230% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: textShine 4.8s ease-in-out infinite;
+    }
+
+    .lead {
+      max-width: 590px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(19px, 2vw, 25px);
+      line-height: 1.42;
+      letter-spacing: -.02em;
+      animation: reveal .7s .16s ease both;
+    }
+
+    .actions {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-top: 34px;
+      animation: reveal .7s .24s ease both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      padding: 0 22px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 650;
+      letter-spacing: -.01em;
+      transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
+    }
+
+    .btn.primary {
+      color: #fff;
+      background: #0071e3;
+      box-shadow: 0 18px 38px rgba(0, 113, 227, .25);
+    }
+
+    .btn.secondary {
+      color: var(--ink);
+      background: rgba(255,255,255,.7);
+      border: 1px solid var(--line);
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn.primary:hover { box-shadow: 0 22px 48px rgba(0, 113, 227, .32); }
+
+    .stage {
+      position: relative;
+      min-height: 620px;
+      display: grid;
+      place-items: center;
+      perspective: 1100px;
+    }
+
+    .halo {
+      position: absolute;
+      width: 78%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(106, 180, 255, .22), transparent 64%);
+      filter: blur(8px);
+      animation: breathe 5.8s ease-in-out infinite;
+    }
+
+    .hero-card {
+      position: relative;
+      width: min(760px, 96%);
+      border-radius: 38px;
+      overflow: hidden;
+      background: var(--glass);
+      border: 1px solid rgba(255, 255, 255, .74);
+      box-shadow: var(--shadow);
+      transform-style: preserve-3d;
+      animation: floatImage 6.2s ease-in-out infinite, reveal .9s .12s ease both;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(115deg, transparent 0%, transparent 36%, rgba(255,255,255,.42) 47%, transparent 59%, transparent 100%);
+      transform: translateX(-78%);
+      animation: sweep 5.2s ease-in-out infinite 1.1s;
+      pointer-events: none;
+    }
+
+    .hero-card img {
+      display: block;
+      width: 100%;
+      transform: scale(1.03);
+      filter: saturate(1.02) contrast(1.02);
+    }
+
+    .orbital {
+      position: absolute;
+      inset: 9% 9% auto auto;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 113, 227, .20);
+      background: rgba(255, 255, 255, .55);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 16px 44px rgba(32, 92, 156, .16);
+      animation: orbit 8s linear infinite;
+    }
+
+    .orbital::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      top: 9px;
+      left: 50%;
+      border-radius: 50%;
+      background: #0071e3;
+      box-shadow: 0 0 28px rgba(0, 113, 227, .72);
+    }
+
+    .metrics {
+      position: absolute;
+      left: 1%;
+      bottom: 6%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: min(580px, 92%);
+      animation: reveal .7s .38s ease both;
+    }
+
+    .metric {
+      padding: 16px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, .72);
+      background: rgba(255, 255, 255, .62);
+      backdrop-filter: blur(18px) saturate(160%);
+      box-shadow: 0 14px 34px rgba(24, 42, 67, .08);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      letter-spacing: -.045em;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .features {
+      width: min(1080px, calc(100% - 44px));
+      margin: -28px auto 88px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feature {
+      min-height: 210px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background: rgba(255, 255, 255, .72);
+      box-shadow: 0 18px 52px rgba(24, 42, 67, .07);
+    }
+
+    .feature .icon {
+      width: 38px;
+      height: 38px;
+      margin-bottom: 36px;
+      border-radius: 13px;
+      background: linear-gradient(145deg, #fff, #dcefff);
+      box-shadow: inset 0 0 0 1px rgba(0,113,227,.08), 0 12px 28px rgba(0,113,227,.12);
+    }
+
+    .feature h3 {
+      margin: 0 0 10px;
+      font-size: 23px;
+      letter-spacing: -.035em;
+    }
+
+    .feature p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.58;
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(18px); filter: blur(8px); }
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+
+    @keyframes textShine {
+      0%, 42% { background-position: 0% 50%; }
+      72%, 100% { background-position: 100% 50%; }
+    }
+
+    @keyframes floatImage {
+      0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
+      50% { transform: translateY(-18px) rotateX(1.6deg) rotateY(-2.2deg); }
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(.95); opacity: .62; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    @keyframes sweep {
+      0%, 52% { transform: translateX(-82%); }
+      82%, 100% { transform: translateX(82%); }
+    }
+
+    @keyframes orbit {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 900px) {
+      .nav .links { display: none; }
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 104px;
+      }
+      .stage { min-height: 430px; }
+      .features { grid-template-columns: 1fr; }
+      .metrics { position: relative; left: auto; bottom: auto; margin-top: -46px; grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="主导航">
+    <div class="brand"><span class="mark" aria-hidden="true"></span> Neura</div>
+    <div class="links">
+      <a href="#features">能力</a>
+      <a href="#demo">演示</a>
+      <a href="#start">开始</a>
+    </div>
+    <button class="cta-small">预约体验</button>
+  </nav>
+
+  <main>
+    <section class="hero" id="start">
+      <div class="copy">
+        <div class="eyebrow">新一代个人 AI 工作空间</div>
+        <h1>让想法<br><span class="shine">自动成形。</span></h1>
+        <p class="lead">Neura 将搜索、写作、代码和知识沉淀合并到一个安静、快速、可信任的 AI workflow 中。少一点切换，多一点完成。</p>
+        <div class="actions">
+          <a class="btn primary" href="#demo">观看动态演示</a>
+          <a class="btn secondary" href="#features">了解能力</a>
+        </div>
+      </div>
+
+      <div class="stage" id="demo" aria-label="AI 动态宣传图">
+        <div class="halo"></div>
+        <figure class="hero-card">
+          <img src="assets/ai-hero-orb.png" alt="悬浮玻璃 AI 神经网络球体宣传图" />
+        </figure>
+        <div class="orbital" aria-hidden="true"></div>
+        <div class="metrics" aria-label="产品指标">
+          <div class="metric"><strong>3.8×</strong><span>更快整理信息</span></div>
+          <div class="metric"><strong>24/7</strong><span>持续上下文</span></div>
+          <div class="metric"><strong>0 噪声</strong><span>专注式交互</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <article class="feature">
+        <div class="icon"></div>
+        <h3>懂你的上下文</h3>
+        <p>把项目、笔记和任务串起来，回答不止是内容，更是下一步行动。</p>
+      </article>
+      <article class="feature">
+        <div class="icon"></div>
+        <h3>安静但高效</h3>
+        <p>Apple-style 极简界面，减少干扰；动态反馈只在真正有帮助时出现。</p>
+      </article>
+      <article class="feature">
+        <div class="icon"></div>
+        <h3>从灵感到交付</h3>
+        <p>一键生成方案、页面、代码和日志，让个人 workflow 形成闭环。</p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    // 轻量视差：只改变 CSS 变量/transform，避免频繁布局计算。
+    const card = document.querySelector('.hero-card');
+    const stage = document.querySelector('.stage');
+
+    stage.addEventListener('pointermove', (event) => {
+      const rect = stage.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `translateY(-10px) rotateX(${y * -5}deg) rotateY(${x * 7}deg)`;
+    });
+
+    stage.addEventListener('pointerleave', () => {
+      card.style.transform = '';
+    });
+  </script>
+</body>
+</html>
